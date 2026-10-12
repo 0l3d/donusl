@@ -9,17 +9,20 @@ var r1 = 0.0
 var r2 = 0.0
 
 var zbuffer = List.new($SCREEN_SIZE)
+var screen = List.new($SCREEN_SIZE)
 
+var chars = ".,-~:;=!*#$@"
+var chars_len = string.len($chars)
 
 var frame_counter = 0
 
 while true then
-	var screen = ""
 	List.clear($zbuffer)
+	List.clear($screen)
 
 	var i = 0 
 	while $i < $SCREEN_SIZE then
-		$screen = $screen + " "
+		List.set($screen, $i, " ")		
 		List.push($zbuffer, 0.0)
 		$i = $i + 1
 	end
@@ -55,18 +58,16 @@ while true then
 				var zbuf = List.get($zbuffer, $screen_idx)
 				if $depth > $zbuf then
 					List.set($zbuffer, $screen_idx, $depth)
-					var chars = ".,-~:;=!*#$@"
 					var char_idx = 0
 					if $luminance > 0.0 then
 						$char_idx = types.double_to_int($luminance)
-						var len = string.len($chars)
-   						if $char_idx eqg $len then
+   						if $char_idx eqg $chars_len then
 							$char_idx = $len - 1
    						end					
 					else
 						$char_idx = 0
 					end
-					$screen = string.set_char_at($screen, $screen_idx, string.char_at($chars, $char_idx))
+					List.set($screen, $screen_idx, string.char_at($chars, $char_idx))
 				end
 			end
 			$a = $a + 0.02
@@ -78,8 +79,7 @@ while true then
 
 	var j = 0
 	while $j < $SCREEN_SIZE then
-    		io.print(string.char_at($screen, $j))
-
+		io.print(List.get($screen, $j))
 		if ($j + 1) % $SCREEN_WIDTH equ 0 then
 			io.print("\n")
 		end
